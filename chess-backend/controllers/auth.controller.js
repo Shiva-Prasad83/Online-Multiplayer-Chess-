@@ -35,6 +35,7 @@ const login=async (req,res)=>{
         res.cookie("refreshToken",refreshToken,{
             httpOnly:true,
             secure:process.env.NODE_ENV==="production",
+            path:"/api/v1/auth/refresh",
             maxAge:7*24*60*60*1000
         })
         return res.status(200).json({message:"OK"});
@@ -72,12 +73,62 @@ try{
 const fetchMe=(req,res)=>{
   try{
    const user=req.user;
-   return res.status(200).json(user);
+   return res.status(200).json({user});
   }catch(err){
     return res.status(500).json({err:err.message});
   }
-  
-
 }
 
-module.exports={login,signup};
+const logout=(req,res)=>{
+  try{
+   res.clearCookie("accessToken",{
+    httpOnly:true,
+    secure:process.env.NODE_ENV==='production'
+   })
+   res.clearCookie("refreshToken",{
+    httpOnly:true,
+    secure:process.env.NODE_ENV==="production",
+    path:"/api/v1/auth/refresh"
+   })
+   return res.status(200).json({message:"OK"});
+  }catch(err){
+   return res.status(500).json({message:err.message});
+  }
+}
+
+const refresh=async (req,res)=>{
+  try{
+   const {refreshToken}=req.cookies;
+   if(!refreshToken){
+    return res.status(400).json({message:'Refresh token missing'});
+   }
+   const payload=jwt.verify(refresh,process.env.JWT_REFRESH_SECRET);
+   if(payload.type!=='refresh'){
+    return res.status(400).json({message:'Token type is not refresh'});
+   }
+   const id=payload.sub;
+   const user=await User.findById(id);
+   if(!user){
+    res.clearCookie('refreshToken',{
+      httpOnly:true,
+      secure:process.env.NODE_ENV==="production",
+      path:"/api/v1/auth/refresh",
+    });
+    return res.status(400).json({message:"User not found"});
+   }
+   const accessToken=jwt.sign({sub:user._id,role:user.role},
+    process.env.JWT_ACCESS_SECRET,
+    {expiresIn:"15m"})
+
+    res.cookie('accessToken',accessToken,{
+      httpOnly:true,
+      secure:process.env.NODE_ENV==="production",
+      maxAge:15*60*1000,
+    })
+    return res.status(200).json({message:"OK"});
+  }catch(err){
+    return res.status(200).json({message:err.message});
+  }
+}
+
+module.exports={login,signup,fetchMe,logout,refresh};

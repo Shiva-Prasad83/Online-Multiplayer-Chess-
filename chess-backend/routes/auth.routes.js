@@ -1,11 +1,11 @@
 const express=require('express');
 
 const authRouter=express.Router();
-const {login,signup}=require('../controllers/auth.controller');
+const {login,signup,fetchMe, logout, refresh}=require('../controllers/auth.controller');
 
 authRouter.post("/login",login);
 authRouter.post("/signup",signup);
-authRouter.post("/logout",(req,res)=>res.sendStatus(200));
-authRouter.post("/refresh",(req,res)=>res.sendStatus(200));
-authRouter.get("/me",(req,res)=>res.sendStatus(200));
+authRouter.post("/logout",logout);
+authRouter.post("/refresh",refresh);
+authRouter.get("/me",fetchMe);
 module.exports={authRouter};
