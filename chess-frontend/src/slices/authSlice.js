@@ -1,6 +1,6 @@
 import {createSlice,createAsyncThunk} from '@reduxjs/toolkit';
 import api from '../api/client';
-const signup=createAsyncThunk('chess/signup',async function(name,email,password,thunkAPI){
+export const signup=createAsyncThunk('chess/signup',async function(name,email,password,thunkAPI){
    try{
       const res=await api.post('/chess/signup',{name,email,password});
       return res.data;
@@ -11,7 +11,7 @@ const signup=createAsyncThunk('chess/signup',async function(name,email,password,
    }
 });
 
-const login=createAsyncThunk("chess/login",async (email,password,thunkAPI)=>{
+export const login=createAsyncThunk("chess/login",async (email,password,thunkAPI)=>{
     try{
      const res=await api.post('/chess/login',{email,password});
      return res.data
@@ -22,11 +22,40 @@ const login=createAsyncThunk("chess/login",async (email,password,thunkAPI)=>{
     }
    
 })
+
+export const logout=createAsyncThunk('chess/logout',async (_,thunkAPI)=>{
+  try{
+     const res=await api.post('/chess/logout');
+     return res.data;
+  }catch(err){
+    return thunkAPI.rejectWithValue(err.message || "logout failed");
+  }
+})
+
+export const fetchMe=createAsyncThunk('chess/fetchMe',async (_,thunkAPI)=>{
+ try{
+     const res=await api.get('/chess/fetchMe');
+     return res.data;
+ }catch(err){
+  return thunkAPI.rejectWithValue(err.message||"fetchMe Failed")
+ }
+})
+
+export const refresh=createAsyncThunk('chess/refresh',async (_,thunkAPI)=>{
+  try{ 
+    const res=await api.post('/chess/refresh');
+    return res.data;
+  }catch(err){
+    return thunkAPI.rejectWithValue(err.message||"refresh Failed");
+  }
+})
+
 const initialState={
     user:null,
     status:"idle",
     error:null
 }
+
 
 const authSlice=createSlice({
     name:"auth",
@@ -57,9 +86,23 @@ const authSlice=createSlice({
     .addCase(signup.rejected,rejected)
     .addCase(login.pending,pending)
     .addCase(login.fulfilled,fulfilled)
-    .addCase(login.rejected,rejected);
+    .addCase(login.rejected,rejected)
+    .addCase(logout.pending,pending)
+    .addCase(logout.fulfilled,(state,action)=>{
+        state.user=null;
+        state.status="success",
+        state.error=null;
+    })
+    .addCase(logout.rejected,rejected)
+    .addCase(fetchMe.pending,pending)
+    .addCase(fetchMe.fulfilled,(state,action)=>{
+      state.user=action.payload;
+      state.status="success";
+      state.error=null;
+    })
+    .addCase(fetchMe.rejected,rejected);
     }
 });
 
-export default authSlice;
+export default authSlice.reducer;
 
