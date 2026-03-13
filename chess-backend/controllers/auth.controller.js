@@ -3,6 +3,7 @@ const bcrypt=require('bcrypt');
 const jwt=require('jsonwebtoken');
 require('dotenv').config();
 const login=async (req,res)=>{
+  console.log("login controller")
     try{
       const {email,password}=req.body;
       if(!email||!password){
@@ -10,7 +11,7 @@ const login=async (req,res)=>{
       }
       const user=await User.findOne({email});
       if(!user){
-        return res.status(404).json({message:"User doesn't exists"});
+        return res.status(400).json({message:"User doesn't exists"});
       }
       const match=await bcrypt.compare(password,user.passwordHash);
       if(!match){
@@ -102,7 +103,7 @@ const refresh=async (req,res)=>{
    if(!refreshToken){
     return res.status(400).json({message:'Refresh token missing'});
    }
-   const payload=jwt.verify(refresh,process.env.JWT_REFRESH_SECRET);
+   const payload=jwt.verify(refreshToken,process.env.JWT_REFRESH_SECRET);
    if(payload.type!=='refresh'){
     return res.status(400).json({message:'Token type is not refresh'});
    }

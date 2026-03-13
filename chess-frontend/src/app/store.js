@@ -5,5 +5,6 @@ const store=configureStore({
      authReducer
     }
 })
+console.log(store,"store");
 
 export default store;
