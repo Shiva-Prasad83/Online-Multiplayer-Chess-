@@ -26,6 +26,7 @@ function Lobby() {
       //isAuthenticated becomes false in lobby when page reloads
 
       //After getting the response the fetchMe api endpoint, Again redux userSlice state is updated
+      //So this component is using userSlice state so it re-renders.
       //Now user is there and isAuthenticated is true So we'll access this component.
 
       if(!isAuthenticated){

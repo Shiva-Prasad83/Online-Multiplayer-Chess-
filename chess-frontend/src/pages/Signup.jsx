@@ -18,6 +18,7 @@ function Signup() {
      await dispatch(signup({name,email,password})).unwrap();
      navigate('/login');
     }catch(err){
+      //console.log("Inside catch",err);
       notify(err.message);
     }
     e.target.reset();

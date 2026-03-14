@@ -21,11 +21,11 @@ function Login() {
         // console.log(success,"after dispatching");
         // if(success.payload.message=="OK"){
         await dispatch(fetchMe()).unwrap();
-          navigate('/lobby');
-          
+         notify("Login Successful")
+          navigate('/lobby');          
         //}
         }catch(err){
-          //  console.log(err);
+           // console.log(err);
           notify(err.message);
         }
         

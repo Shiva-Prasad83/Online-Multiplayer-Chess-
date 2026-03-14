@@ -30,7 +30,7 @@ function Layout() {
                  }} className='text-white text-lg font-semibold bg-gradient-to-r cursor-pointer from-indigo-500 to-purple-600 cursor-pointer p-2 w-30 rounded-md' >♕ Profile</button>
             <button to="/logout" onClick={handleLogout} className='text-white text-lg font-semibold bg-gradient-to-r cursor-pointer from-indigo-500 to-purple-600 cursor-pointer p-2 w-30 rounded-md'>♞ Logout</button>
             </div>
-            :<div className='flex gap-4 items-center'>
+            :<div className='flex flex-col gap-2 sm:flex-row sm:justify-between sm:gap-4 items-center'>
               <button onClick={()=>{
                     navigate('/');
                  }} className='text-white text-lg font-semibold bg-gradient-to-r cursor-pointer from-indigo-500 to-purple-600 cursor-pointer p-2 w-30 rounded-md' >♕ Home</button>

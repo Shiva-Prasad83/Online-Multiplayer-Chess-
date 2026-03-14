@@ -1,1 +1,11 @@
 @import 'tailwindcss'
+
+/* Understanding Tailwind Breakpoints
+Tailwind breakpoints are minimum-width by default, meaning sm: applies at 640px and above, not below. So if you want column on small and row on large, you need to invert the logic:
+jsx// 
+✅ Correct: column by default, row on sm and above
+className='flex flex-col gap-2 items-center sm:flex-row sm:gap-4' 
+
+// ❌ Wrong: this makes it column on sm (640px+) and row on small screens
+className='flex flex-row gap-4 items-center sm:flex-col sm:gap-2'
+*/
