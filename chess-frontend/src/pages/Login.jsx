@@ -1,31 +1,38 @@
 import React from 'react'
 import '../App.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { login } from '../slices/authSlice';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { fetchMe, login } from '../slices/authSlice';
+import {Navigate, useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 function Login() {
-    const [error,setError]=useState('');
+    const notify=(message)=>toast(message);
     const navigate=useNavigate();
     const dispatch=useDispatch();
-    useSelector((state)=>{
-      console.log(state,"State");
-    })
-    async function handleSubmit(e){
-        setError("");
+    async function handleSubmit(e){       
         e.preventDefault();
         const formData=new FormData(e.target);
         const email=formData.get('email');
         const password=formData.get('password');
+        e.target.reset();
         //console.log(name,password);
-        const success=await dispatch(login({email,password}))
-        console.log(success,"after dispatching");
-        if(success.payload.message=="OK"){
+        try{
+          await dispatch(login({email,password})).unwrap();
+          notify("Logged In !!");
+        // console.log(success,"after dispatching");
+        // if(success.payload.message=="OK"){
+        await dispatch(fetchMe()).unwrap();
           navigate('/lobby');
           
-        }else{
-          setError(success.payload.message);
+        //}
+        }catch(err){
+          //  console.log(err);
+          notify(err.message);
         }
+        
+    }
+    const user=useSelector((state)=>state.authReducer.user);
+    if(user){
+      return <Navigate to="/lobby"/>
     }
   return (
   <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-gray-800 to-black">
@@ -42,10 +49,10 @@ function Login() {
         <span>♘</span>
       </div>
 
-      {/* Login Card */}
+      
       <div className="relative backdrop-blur-lg bg-white/10 border border-white/20 shadow-2xl rounded-2xl p-10 w-[380px] text-white">
 
-        {/* Title */}
+        
         <div className="text-center mb-8">
           <div className="text-5xl mb-2">♔</div>
           <h1 className="text-3xl font-bold tracking-wide">Chess Arena</h1>
@@ -54,7 +61,7 @@ function Login() {
           </p>
         </div>
 
-        {/* Form */}
+       
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
 
           <input
@@ -79,16 +86,15 @@ function Login() {
           </button>
         </form>
 
-        {/* Footer */}
-        <p className="text-center text-gray-400 text-sm mt-6">
-          New player? <span className="text-indigo-400 cursor-pointer" onClick={()=>
+        
+        <p className="text-center text-white text-md mt-6">
+          New player? <span className="text-blue-700 font-semibold cursor-pointer" onClick={()=>
             navigate('/signup')
           }>Create account</span>
         </p>
 
       </div>
-      {error&&<h1 className='text-red-600 text-xl font-bold'>{error}</h1>}
-
+      <ToastContainer/>
     </div>
   )
 }

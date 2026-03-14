@@ -1,10 +1,9 @@
 import {createSlice,createAsyncThunk} from '@reduxjs/toolkit';
 import api from '../api/client';
 export const signup=createAsyncThunk('auth/signup',async function({name,email,password},thunkAPI){
+  console.log(name,email,password,"Inside signup slice");
    try{
-      const res=await api.post('/auth/signup',{name,email,password},{
-        headers:{"Content-Type":"application/json"}
-      });
+      const res=await api.post('/auth/signup',{name,email,password});
       return res.data;
    }catch(err){
     //If sigup api throws any error then thunkAPI.rejectWithValue()
@@ -55,7 +54,8 @@ export const refresh=createAsyncThunk('auth/refresh',async (_,thunkAPI)=>{
 const initialState={
     user:null,
     status:"idle",
-    error:null
+    error:null,
+    isAuthenticated:false
 }
 
 
@@ -65,7 +65,7 @@ const authSlice=createSlice({
     reducers:{},
     extraReducers:(builder)=>{
     function pending(state){
-        state.user=null;
+        //state.user=null;
         state.status="pending";
         state.error=null;
     }
@@ -101,8 +101,14 @@ const authSlice=createSlice({
       state.user=action.payload;
       state.status="success";
       state.error=null;
+      state.isAuthenticated=true;
     })
-    .addCase(fetchMe.rejected,rejected);
+    .addCase(fetchMe.rejected,(state,action)=>{
+      state.status="error",
+        state.error=action.payload;
+        state.user=null
+        state.isAuthenticated=true
+    });
     }
 });
 console.log(authSlice.reducer,"auth slice");

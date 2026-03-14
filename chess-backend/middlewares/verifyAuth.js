@@ -1,15 +1,18 @@
 const jwt=require("jsonwebtoken");
 const { User } = require("../models/user.model");
 const verifyAuth=async (req,res,next)=>{
+   
     try{
        const {accessToken}=req.cookies;
        if(!accessToken){
         return res.status(401).json({message:"Acess token missing"});
        }
+       
        let payload;
        try{
-         payload=jwt.verify(accessToken,process.env.JWT_ACESSS_SECRET);
+         payload=jwt.verify(accessToken,process.env.JWT_ACCESS_SECRET);
        }catch(err){
+         
           return res.status(401).json({message:err.message});
        }
        const id=payload.sub;
@@ -18,6 +21,7 @@ const verifyAuth=async (req,res,next)=>{
        if(!user){
         return res.status(401).json({message:"User not found"});
        }
+       
        if(payload.role!==user.role){
         return res.status(401).json({message:"Unauthorized"});
        }

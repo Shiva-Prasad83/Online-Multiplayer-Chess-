@@ -3,7 +3,6 @@ const bcrypt=require('bcrypt');
 const jwt=require('jsonwebtoken');
 require('dotenv').config();
 const login=async (req,res)=>{
-  console.log("login controller")
     try{
       const {email,password}=req.body;
       if(!email||!password){
